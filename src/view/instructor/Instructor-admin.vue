@@ -7,7 +7,7 @@
         </div>
 
         <div class="handle-box">
-            <el-input v-model="selectName" placeholder="course number" class="handle-input mr10"></el-input>
+            <el-input v-model="selectFirstName" placeholder="instructor first name" class="handle-input mr10"></el-input>
             <el-button type="primary" icon="el-icon-search" @click="search">search</el-button>
             <el-button type="danger" icon="el-icon-close" @click="cancelSearch">cancel filter</el-button>
             <el-button type="success" icon="el-icon-plus" @click="openAddPage">add new course</el-button>
@@ -38,7 +38,7 @@
                 <el-table-column label="Operation" width="200" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="getInstructor(scope.row.id)">edit</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteCourse(scope.row.id)"
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteInstructor(scope.row.id)"
                                    v-show="scope.row.status !== '3'">delete
                         </el-button>
                     </template>
@@ -77,29 +77,35 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                     <el-button @click="cancelEdit">Cancel</el-button>
-                    <el-button type="primary" @click="updateCourse">Save</el-button>
+                    <el-button type="primary" @click="updateInstructor">Save</el-button>
             </span>
         </el-dialog>
         <!-- add new instructor -->
-        <el-dialog title="add a new course" :visible.sync="addInstructorVisible" width="50%">
-            <el-form ref="addCourse" :model="editInstructor" label-width="80px">
-                <el-form-item label="semester" prop="semester">
-                    <el-input v-model="editInstructor.semester"></el-input>
+        <el-dialog title="add a new instructor" :visible.sync="addInstructorVisible" width="50%">
+            <el-form ref="addInstructor" :model="editInstructor" label-width="80px">
+                <el-form-item label="first name" prop="firstName">
+                    <el-input v-model="editInstructor.firstName"></el-input>
                 </el-form-item>
-                <el-form-item label="course number" prop="number">
-                    <el-input v-model="editInstructor.number"></el-input>
+                <el-form-item label="last name" prop="lastName">
+                    <el-input v-model="editInstructor.lastName"></el-input>
                 </el-form-item>
-                <el-form-item label="name" prop="name">
-                    <el-input v-model="editInstructor.name"></el-input>
+                <el-form-item label="phone number" prop="phone">
+                    <el-input v-model="editInstructor.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="session" prop="session">
-                    <el-input v-model="editInstructor.session"></el-input>
+                <el-form-item label="email address" prop="email">
+                    <el-input v-model="editInstructor.email"></el-input>
+                </el-form-item>
+                <el-form-item label="status" prop="status">
+                    <el-select v-model="editInstructor.status" placeholder="status">
+                        <el-option key="1" label="activated" value="1"></el-option>
+                        <el-option key="2" label="inactivated" value="2"></el-option>
+                    </el-select>
                 </el-form-item>
 
             </el-form>
             <span slot="footer" class="dialog-footer">
                     <el-button @click="cancelAdd">Cancel</el-button>
-                    <el-button type="primary" @click="addCourse">add</el-button>
+                    <el-button type="primary" @click="addInstructor">add</el-button>
                 </span>
         </el-dialog>
 
@@ -135,7 +141,7 @@
                 /**
                  * select data
                 */
-                selectName:'',
+                selectFirstName:'',
 
 
                 /**
@@ -160,7 +166,7 @@
                     url: '/api/professors',
                 }).then(res => {
                     this.instructors = res.data;
-                    this.instructors = res.data;
+                    this.tempInstructors = res.data;
                 }).catch(error => {
                     this.$message.error("data load failed");
                 })
@@ -181,71 +187,41 @@
             /**
              * operation methods
              */
-            updateCourse() {
+            updateInstructor() {
                 this.$axios({
                     method: 'put',
                     url: '/api/professor',
                     data: this.editInstructor
                 }).then(res => {
-                    this.$message.success(res.msg);
                     this.getData();
-                    this.getInstructor(this.editCourse.id);
-                    console.log(this.editCourse)
+                    this.getInstructor(this.editInstructor.id);
+                    this.$message.success(res.msg);
                 }).catch(error => {
-                    this.$message.error("system error, pleases try later");
+                    this.$message.error(error);
+
                 })
             },
-            changeTId(){
-              this.editCourse.tId = this.instructorList.filter(item => {
-                  return item.firstName === this.editCourse.firstName;
-              })[0].id;
-            },
 
+            /**
+             * search methods
+             */
             search(){
-                this.courses = this.courseTemp;
-                if (this.selectSemester !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.semester === this.selectSemester;
-                    })
-                }
-                if (this.selectCourseNumber !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.number === this.selectCourseNumber;
-                    })
-                }
-                if (this.selectNCourseName !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.name === this.selectNCourseName;
+                this.instructors = this.tempInstructors;
+
+                if (this.selectFirstName !== ''){
+                    this.instructors = this.instructors.filter(item => {
+                        return item.firstName.indexOf(this.selectFirstName) !== -1;
                     })
                 }
             },
             cancelSearch(){
-                this.courses = this.courseTemp;
-                this.selectNCourseName = '';
-                this.selectSemester = '';
-                this.selectCourseNumber = '';
-            },
-            removeItem(item) {
-                let index = this.editCourse.includeItems.indexOf(item)
-                if (index !== -1) {
-                    this.editCourse.includeItems.splice(index, 1)
-                }
-                this.$axios({
-                    method: 'delete',
-                    url: '/api/instructor/delete/' + item.id
-                }).then(res => {
-                    console.log(res);
-                }).catch(error => {
-                    console.log(error);
-                })
-
-                this.$forceUpdate();
-
+                this.instructors = this.tempInstructors;
+                this.selectFirstName = '';
             },
 
-            change() {
-                this.$forceUpdate();
-            },
+            /**
+             *  render methods
+             */
             filterStatus(value, row) {
                 return row.status === value;
             },
@@ -259,15 +235,25 @@
                 else if (scope.row.status === '2') return 'danger'
                 else return 'warning';
             },
-            deleteCourse(id) {
-                this.$confirm('This operation will permanently delete the file, do you want to continue?', 'Notification', {
+
+
+            /**
+             *  common methods
+             */
+
+            change() {
+                this.$forceUpdate();
+            },
+
+            deleteInstructor(id) {
+                this.$confirm('This operation will permanently delete the record, do you want to continue?', 'Notification', {
                     confirmButtonText: 'confirm',
                     cancelButtonText: 'cancel',
                     type: 'warning'
                 }).then(() => {
                     this.$axios({
-                        method: 'get',
-                        url: 'api/instructor/delete/' + id
+                        method: 'delete',
+                        url: 'api/professor/' + id
                     }).then(res => {
                         this.$message.success(res.msg);
                         this.getData();
@@ -290,8 +276,8 @@
                 this.uploadImgVisible = false;
             },
             openAddPage(){
-                this.resetForm('addCourse');
-                this.addCourseVisible = true;
+                this.resetForm('addInstructor');
+                this.addInstructorVisible = true;
             },
             resetForm(formName) {
                 this.$nextTick(()=>{
@@ -303,17 +289,14 @@
              *  add new instructor methods
              */
             cancelAdd(){
-                this.addCourseVisible = false;
+                this.addInstructorVisible = false;
             },
-            addCourse(){
-                this.resetForm('addCourse');
-
+            addInstructor(){
                 this.$axios({
                     method:'post',
-                    url: "/api/instructor",
-                    data: this.editCourse
+                    url: "/api/professor",
+                    data: this.editInstructor
                 }).then(res => {
-                    console.log(res)
                     this.getData()
                     this.$message.success(res.msg);
                 }).catch(error => {
