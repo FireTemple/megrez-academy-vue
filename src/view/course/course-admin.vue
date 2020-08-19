@@ -135,7 +135,7 @@
                     <el-button type="primary" @click="updateCourse">Save</el-button>
                 </span>
         </el-dialog>
-        <!-- add new instructor -->
+        <!-- add new course -->
         <el-dialog title="add a new course" :visible.sync="addCourseVisible" width="50%">
             <el-form ref="addCourse" :model="editCourse" label-width="80px">
                 <el-form-item label="semester" prop="semester">
@@ -268,7 +268,6 @@
                 })
             },
             getCourse(id){
-                console.log(id)
                 this.editVisible = true;
                return this.$axios({
                     method: 'get',
@@ -285,6 +284,7 @@
              * operation methods
              */
             updateCourse() {
+                console.log(this.editCourse);
                 this.$axios({
                     method: 'put',
                     url: '/api/course',
@@ -335,7 +335,7 @@
                 }
                 this.$axios({
                     method: 'delete',
-                    url: '/api/instructor/delete/' + item.id
+                    url: '/api/courses/delete/' + item.id
                 }).then(res => {
                     console.log(res);
                 }).catch(error => {
@@ -372,7 +372,7 @@
                 }).then(() => {
                     this.$axios({
                         method: 'get',
-                        url: 'api/instructor/delete/' + id
+                        url: 'api/course/delete/' + id
                     }).then(res => {
                         this.$message.success(res.msg);
                         this.getData();
@@ -411,11 +411,9 @@
                 this.addCourseVisible = false;
             },
             addCourse(){
-                this.resetForm('addCourse');
-
                 this.$axios({
                     method:'post',
-                    url: "/api/instructor",
+                    url: "/api/course",
                     data: this.editCourse
                 }).then(res => {
                     console.log(res)
