@@ -39,22 +39,47 @@
                 collapse: false,
                 items: [
 
-                    // {   icon: 'el-icon-lx-cascades',
-                    //     index: 'tourList',
-                    //     title: 'View current tour list'
-                    // },
-                    {   icon: 'el-icon-lx-cascades',
-                        index: 'instructor-admin',
-                        title: 'Manage instructors'
+
+                    {
+                        icon: 'el-icon-lx-calendar',
+                        index: 'admin-page',
+                        title: 'Admin page',
+                        subs:[
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'instructor-admin',
+                                title: 'Manage instructors'
+                            },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'course-admin',
+                                title: 'Manage courses'
+                            },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'user-admin',
+                                title: 'Manage user'
+                            },
+                        ]
                     },
-                    {   icon: 'el-icon-lx-cascades',
-                        index: 'course-admin',
-                        title: 'Manage courses'
+                    {
+                        icon: 'el-icon-lx-calendar',
+                        index: 'user-page',
+                        title: 'User page',
+                        subs:[
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'courses',
+                                title: 'view courses'
+                            },
+
+                        ]
                     },
                     {
                         icon: 'el-icon-lx-home',
                         index: 'dashboard',
                         title: '系统首页'
+                    },
+                    {
+                        icon: 'el-icon-lx-copy',
+                        index: 'course',
+                        title: 'courses'
                     },
                     {
                         icon: 'el-icon-lx-cascades',
@@ -66,6 +91,7 @@
                         index: 'tabs',
                         title: 'tab选项卡'
                     },
+
                     {
                         icon: 'el-icon-lx-calendar',
                         index: '3',

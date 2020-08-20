@@ -113,6 +113,20 @@ export default new Router({
                     component: resolve => require(['../view/course/course-admin'], resolve),
                     meta: { title: 'course admin' }
                 },
+                {
+                    path: '/user-admin',
+                    component: resolve => require(['../view/user/user-admin'], resolve),
+                    meta: { title: 'user admin' }
+                },
+
+                /**
+                 * user's page
+                 */
+                {
+                    path: '/courses',
+                    component: resolve => require(['../view/course/course'], resolve),
+                    meta: { title: 'view all course' }
+                },
             ]
         },
         {
