@@ -46,10 +46,25 @@
                 <el-table-column prop="firstName" label="instructor">
                 </el-table-column>
 
-
+                <el-table-column
+                        prop="status"
+                        label="status"
+                        width="100"
+                        fixed="right"
+                        :filters="[{ text: 'activated', value: '1' }, { text: 'deactivated', value: '2' },{text: 'canceled',value:'3'}]"
+                        :filter-method="filterStatus"
+                        filter-placement="bottom-end">
+                    <template slot-scope="scope">
+                        <el-tag
+                                :type="tagType(scope)"
+                                disable-transitions>{{slotContent(scope)}}
+                        </el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column label="Operation" width="180" align="center" fixed="right">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="getCourse(scope.row.id)">register</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="getCourse(scope.row.id)" v-show="scope.row.status === '1'">register</el-button>
+                        <el-button style="color: red" type="text" icon="el-icon-edit"  v-show="scope.row.status !== '1'">unavailable</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -60,79 +75,62 @@
         </div>
 
         <!-- add new course -->
-        <el-dialog title="add a new course" :visible.sync="registerVisible" width="50%">
-
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-md-8 col-12 my-auto mx-auto">
-                        <h1>
-                            Stripe One-Time Charge
-                        </h1>
-                        <p class="lead mb-4">
-                            Please fill the form below to complete the order payment
-                        </p>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5>Leather Bag</h5>
-                                <p class="lead">USD 9.99</p>
-                            </div>
-                        </div>
-                        <form action="#" id="payment-form" method="post">
-                            <input id="api-key" type="hidden" v-model="stripePublicKey">
-                            <div class="form-group">
-                                <label class="font-weight-medium" for="card-element">
-                                    Enter credit or debit card below
-                                </label>
-                                <div class="w-100" id="card-element">
-                                    <!-- A Stripe Element will be inserted here. -->
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" id="studentId" name="studentId"
-                                       placeholder="Marry" type="text" required disabled>
-                            </div>
-                            <!-- Used to display Element errors. -->
-                            <div class="text-danger w-100" id="card-errors" role="alert"></div>
-                            <div class="form-group pt-2">
-                                <button class="btn btn-primary btn-block" id="submitButton" type="submit">
-                                    Pay With Your Card
-                                </button>
-                                <div class="small text-muted mt-2">
-                                    Pay securely with Stripe. By clicking the button above, you agree
-                                    to our <a target="_blank" href="#">Terms of Service</a>,
-                                    <a target="_blank" href="#">Privacy</a> and
-                                    <a target="_blank" href="#">Refund</a> policies.
-
-                                </div>
-                            </div>
-
-
-                        </form>
-                        <p class="mt-5 text-muted">
-                            <small>An example project by <a th:href="@{https://attacomsian.com}" target="_blank">Atta</a>.
-                            </small>
-                        </p>
-                    </div>
+        <el-dialog title="Register a course" :visible.sync="registerVisible" width="50%">
+            <form action="/index/charge" method="post">
+                <h2 style="margin-bottom: 20px">pleases select your kids</h2>
+                <el-select v-model="selectStudentName" placeholder="first name" @change="getRegisterStudentInfo" >
+                    <el-option v-for="item in studentList" :label="item.firstName" :value="item.firstName"
+                               :key="item.id"></el-option>
+                </el-select><br>
+                <div class="messageBox">
+                    <p v-show="registerStatus === 0">Your kid is valid</p>
+                    <p v-show="registerStatus === 1">Your kid is already registed this class</p>
                 </div>
-            </div>
+
+<!--                <el-input-->
+<!--                        class="showStudent"-->
+<!--                        placeholder="check if your kid is valid for register"-->
+<!--                        v-model="registerStatus"-->
+<!--                        :disabled="true">-->
+<!--                </el-input>-->
+                <input type="text" v-model="payStudentId" name="studentId" v-show="false"> <br>
+                <input type="text" v-model="payCourseId" name="id" v-show="false"><br>
+                <input type="text" v-model="payCourseName" name="name" v-show="false"><br>
+                <input type="text" v-model="payUserId" name="userId" v-show="false"><br>
+                <input type="text" v-model="paySemester" name="semester" v-show="false"><br>
+                <input type="text" v-model="payTuition" name="tuition" v-show="false"><br>
+                <input type="text" v-model="payStudentName" name="studentName" v-show="false"><br>
+                <input type="submit" value="confirm" v-show="registerStatus === 0">
+            </form>
 
 
+            <!--            <el-select v-model="selectStudent" placeholder="first name">-->
+            <!--                <el-option v-for="item in studentList" :label="item.firstName" :value="item.firstName"-->
+            <!--                           :key="item.id"></el-option>-->
+            <!--            </el-select>-->
+            <!--            <el-input-->
+            <!--                    class="showStudent"-->
+            <!--                    placeholder="your kid"-->
+            <!--                    v-model="selectStudent"-->
+            <!--                    :disabled="true">-->
+            <!--            </el-input>-->
+            <!--            <el-button type="primary" @click="goPay">Go to payment page</el-button>-->
         </el-dialog>
 
     </div>
 </template>
 
 <script>
-    /**
-     *  import js & css for shrip
-     */
-    import '../../stripe/jquery-3.3.1.min';
-    import '../../stripe/bootstrap.min';
-    import Stripe from 'stripe';
+
+    import $ from 'jquery';
+
     export default {
         name: 'coursesAdmin',
         data() {
             return {
+                /**
+                 *  mock user id
+                 */
 
                 /**
                  * select data
@@ -140,42 +138,41 @@
                 selectSemester: '',
                 selectNCourseName: '',
                 selectCourseNumber: '',
-
+                selectStudentName: '',
                 courses: [],
                 courseTemp: [],
                 /**
                  * stripe data
                  */
-                stripePublicKey:'pk_test_51HGsptBGqOo2oeGirp7bOUiNkiYl1GvGlJgGtXFLn1bUwOxJEIuERBDv5TiFS3BGjl7N0IQ7NJRt4hcurFUTD6Dn00guDvS7oi',
-
-                registerVisible: true,
-                editCourse: {
-                    id: '',
-                    name: '',
-                    session: '',
-                    startTime: '',
-                    endTime: '',
-                    tuition: '',
-                    textbook: '',
-                    prerequisite: '',
-                    des: '',
-                    status: '',
-                    semester: '',
-                    number: '',
-                    lastName: '',
-                    firstName: '',
-                    tId: ''
+                registerVisible: false,
+                registerCourse: {
+                    // all we need
+                    // id: '',
+                    // name: '',
+                    // semester:'',
+                    // tuition: '',
                 },
+                instructorList: [],
+                studentList: [],
 
-                instructorList: []
+                /**
+                 *  payment
+                 */
+                payStudentId: '',
+                payCourseId: '',
+                payCourseName: '',
+                payUserId: '1',
+                paySemester: '',
+                payTuition: '',
+                payStudentName: '',
+                registerStatus:''
             }
         },
         created() {
             this.getData();
-
+            this.getStudent(1);
         },
         mounted() {
-            this.initStrip();
         },
         computed: {},
         methods: {
@@ -194,18 +191,42 @@
                 })
             },
             getCourse(id) {
-                this.editVisible = true;
-                return this.$axios({
-                    method: 'get',
-                    url: '/api/course/' + id,
-                }).then(res => {
-                    this.editCourse = res.data;
-                    console.log(res.data);
-                }).catch(error => {
-                    this.$message.error("system error, pleases try later");
-                });
-            },
+                // reset data
+                this.selectStudentName = '';
+                this.registerStatus = '';
+                this.registerVisible = true;
 
+                this.registerCourse = this.courses.filter(item => {
+                    return item.id === id;
+                })[0];
+
+                this.payCourseId = this.registerCourse.id;
+                this.payCourseName = this.registerCourse.name;
+                this.paySemester = this.registerCourse.semester;
+                this.payTuition = this.registerCourse.tuition;
+            },
+            // get student by user's id
+            getStudent(id) {
+                this.$axios({
+                    method: 'get',
+                    url: '/api/students/' + id
+                }).then(res => {
+                    this.studentList = res.data;
+                }).catch(error => {
+                    this.$message.error(error);
+                })
+            },
+           async getRegisterStudentInfo(){
+                this.registerStatus = '';
+                let selectedStudent = this.studentList.filter(item => {
+                    return item.firstName === this.selectStudentName;
+                })[0];
+
+                this.payStudentId = selectedStudent.id;
+                this.payStudentName = selectedStudent.firstName;
+
+                await this.checkStatus(this.payStudentId, this.payCourseId);
+            },
             /**
              * operation methods
              */
@@ -258,66 +279,32 @@
             },
 
             /**
-             * strip methods
+             * payment
              */
-            handlePayments(stripe,card){
-                stripe.createToken(card).then(function (result) {
-                    if (result.error) {
-                        // Inform the user if there was an error.
-                        let errorElement = document.getElementById('card-errors');
-                        errorElement.textContent = result.error.message;
-                    } else {
-                        // Send the token to your server.
-                        let token = result.token.id;
-                        let email = $('#email').val();
-                        $.post(
-                            "/create-charge",
-                            {email: email, token: token},
-                            function (data) {
-                                console.log(data);
-                            }, 'json');
+            // check if student is valid
+            checkStatus(studentId, courseId){
+                console.log("student id:"+studentId);
+                console.log("course id:" +courseId);
+                this.$axios({
+                    method:'post',
+                    url:'api/check',
+                    params:{
+                        studentId: studentId,
+                        courseId: courseId
                     }
-                });
-            },
-            initStrip(){
-                let API_KEY = this.stripePublicKey;
-                // Create a Stripe client.
-                let stripe = Stripe(API_KEY);
-
-                // Create an instance of Elements.
-                let elements = stripe.elements();
-
-                // Create an instance of the card Element.
-                let card = elements.create('card');
-
-                // Add an instance of the card Element into the `card-element` <div>.
-                card.mount('#card-element');
-
-                // Handle real-time validation errors from the card Element.
-                card.addEventListener('change', function (event) {
-                    let displayError = document.getElementById('card-errors');
-                    if (event.error) {
-                        displayError.textContent = event.error.message;
-                    } else {
-                        displayError.textContent = '';
-                    }
-                });
-
-                // Handle form submission.
-                let form = document.getElementById('payment-form');
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    // handle payment
-                    this.handlePayments(stripe,card);
-                });
+                }).then(res => {
+                    this.registerStatus = res.data;
+                }).catch(error => {
+                    this.$message.error("check status error,pleases check later");
+                })
             }
+
         }
     }
 
 </script>
 
 <style scoped>
-    @import "../../stripe/bootstrap.min.css";
 
     .handle-box {
         margin-bottom: 20px;
@@ -352,5 +339,13 @@
 
     .mr10 {
         margin-right: 10px;
+    }
+
+    .showStudent {
+        margin: 30px 0px;
+    }
+
+    .messageBox{
+        margin: 20px auto;
     }
 </style>

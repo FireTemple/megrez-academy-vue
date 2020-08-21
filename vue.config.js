@@ -1,6 +1,17 @@
+const webpack = require('webpack')
+
+
 module.exports = {
     // baseUrl: './',
     // productionSourceMap: false,
+    chainWebpack: config => {
+        config.plugin('provide').use(webpack.ProvidePlugin, [{
+            $: 'jquery',
+            jquery: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery'
+        }])
+    },
     devServer: {
         proxy: {
             '/test': {
@@ -15,6 +26,14 @@ module.exports = {
                 target: 'http://localhost:8081',
                 pathReWrite:{
                     '^/api': ''
+                },
+                changeOrigin: true,
+                secure:false
+            },
+            '/index': {
+                target: 'http://localhost:8081',
+                pathReWrite:{
+                    '^/index': ''
                 },
                 changeOrigin: true,
                 secure:false
