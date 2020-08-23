@@ -56,7 +56,7 @@
                         label="status"
                         width="100"
                         fixed="right"
-                        :filters="[{ text: 'activated', value: '1' }, { text: 'deactivated', value: '2' },{text: 'canceled',value:'3'}]"
+                        :filters="[{ text: 'activated', value: '1' }, { text: 'deactivated', value: '2' },{text: 'canceled',value:'3'},{text: 'started',value:'4'},{text: 'finished',value:'5'}]"
                         :filter-method="filterStatus"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
@@ -103,17 +103,19 @@
                     <el-select v-model="editCourse.status" placeholder="status">
                         <el-option key="1" label="activated" value="1"></el-option>
                         <el-option key="2" label="inactivated" value="2"></el-option>
-                        <el-option key="3" label="cancel" value="3"></el-option>
+                        <el-option key="3" label="canceled" value="3"></el-option>
+                        <el-option key="4" label="started" value="4"></el-option>
+                        <el-option key="5" label="finished" value="5"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="description" prop="des">
                     <el-input v-model="editCourse.des"></el-input>
                 </el-form-item>
                 <el-form-item label="start time" prop="startTime">
-                    <el-date-picker type="date" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker type="date" value-format="yyyy-MM-dd" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="end time" prop="endTime">
-                    <el-date-picker type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="instructor" prop="firstName">
                     <el-select v-model="editCourse.firstName" placeholder="instructor" @change="changeTId">
@@ -154,18 +156,19 @@
                     <el-select v-model="editCourse.status" placeholder="instructor">
                         <el-option key="1" label="activated" value="1"></el-option>
                         <el-option key="2" label="inactivated" value="2"></el-option>
-                        <el-option key="3" label="deleted" value="3"></el-option>
                         <el-option key="4" label="canceled" value="4"></el-option>
+                        <el-option key="5" label="started" value="5"></el-option>
+                        <el-option key="6" label="finished" value="6"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="description" prop="des">
                     <el-input v-model="editCourse.des"></el-input>
                 </el-form-item>
                 <el-form-item label="start time" prop="startTime">
-                    <el-date-picker type="date" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="end time" prop="endTime">
-                    <el-date-picker type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="instructor" prop="firstName">
                     <el-select v-model="editCourse.firstName" placeholder="instructor" @change="changeTId">
@@ -313,12 +316,12 @@
                 }
                 if (this.selectCourseNumber !== ''){
                     this.courses = this.courses.filter(item => {
-                        return item.number === this.selectCourseNumber;
+                        return item.number.indexOf(this.selectCourseNumber) !== -1 ;
                     })
                 }
                 if (this.selectNCourseName !== ''){
                     this.courses = this.courses.filter(item => {
-                        return item.name === this.selectNCourseName;
+                        return item.name.indexOf(this.selectNCourseName) !== -1 ;
                     })
                 }
             },
@@ -356,12 +359,16 @@
                 if (scope.row.status === '1') return 'activated'
                 else if (scope.row.status === '2') return 'deactivated'
                 else if (scope.row.status === '3') return 'canceled'
-                else return 'cancel';
+                else if (scope.row.status === '4') return 'started'
+                else if (scope.row.status === '5') return 'finished'
+                else return 'missing';
             },
             tagType(scope) {
                 if (scope.row.status === '1') return 'success'
                 else if (scope.row.status === '2') return 'info'
                 else if (scope.row.status === '3') return 'danger'
+                else if (scope.row.status === '4') return 'warning'
+                else if (scope.row.status === '5') return 'primary'
                 else return 'warning';
             },
             deleteCourse(id) {

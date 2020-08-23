@@ -7,25 +7,40 @@
         </div>
 
         <div class="handle-box">
-            <el-input v-model="selectFirstName" placeholder="instructor first name" class="handle-input mr10"></el-input>
+            <el-input v-model="selectFirstName" placeholder="student's first name case sensitive"
+                      class="handle-input mr10"></el-input>
+
             <el-button type="primary" icon="el-icon-search" @click="search">search</el-button>
             <el-button type="danger" icon="el-icon-close" @click="cancelSearch">cancel filter</el-button>
-            <el-button type="success" icon="el-icon-plus" @click="openAddPage">add new course</el-button>
         </div>
 
         <div class="container">
-            <el-table :data="instructors" border class="table" ref="multipleTable" :stripe="true" :fit="true">
+            <el-select v-model="selectCourse" placeholder="current course"
+                       class="handle-select mr10" style="margin-bottom: 30px;width: 200px">
+                <el-option v-for="item in currentCourses" :key="item.id" :label="item.name"
+                           :value="item.name"></el-option>
+            </el-select>
+            <el-button type="primary" icon="el-icon-search" @click="selectStudents">show students</el-button>
+            <el-button type="success" icon="el-icon-search" @click="showAll">show all students</el-button>
+            <el-button type="info" icon="el-icon-refresh" @click="refresh">refresh</el-button>
+
+            <el-table :data="students" border class="table" ref="multipleTable" :stripe="true" :fit="true">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="instructor id" width="350"></el-table-column>
+                <el-table-column prop="id" label="student id" width="350"></el-table-column>
                 <el-table-column prop="firstName" label="first name" width="200"></el-table-column>
                 <el-table-column prop="lastName" label="last name" width="200"></el-table-column>
-                <el-table-column prop="phone" label="phone number" width="200"></el-table-column>
-                <el-table-column prop="email" label="e-mail address" width="200"></el-table-column>
+                <el-table-column prop="birth" label="birth" width="200"></el-table-column>
+                <el-table-column label="gender" width="200" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" v-show="scope.row.gender === '1'">male</el-button>
+                        <el-button type="text" v-show="scope.row.gender === '2'">female</el-button>
+                    </template>
+                </el-table-column>
                 <el-table-column
                         prop="status"
                         label="status"
                         width="200"
-                        :filters="[{ text: 'current', value: '1' }, { text: 'deactivated', value: '2' },{text: 'missing',value:'3'}]"
+                        :filters="[{ text: 'current', value: '1' }, { text: 'deleted', value: '2' }]"
                         :filter-method="filterStatus"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
@@ -35,79 +50,20 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="Operation" width="200" align="center">
+                <el-table-column label="Operation" width="200" align="center" fixed="right">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="getInstructor(scope.row.id)">edit</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteInstructor(scope.row.id)"
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteStudent(scope.row.id)"
                                    v-show="scope.row.status !== '3'">delete
                         </el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination background @current-change="" layout="prev, pager, next" :total="1000">
+                <el-pagination background  layout="prev, pager, next" :total="1000">
                 </el-pagination>
             </div>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="edit instructor" :visible.sync="editVisible" width="50%">
-            <el-form ref="editInstructor" :model="editInstructor" label-width="80px">
-                <el-form-item label="course id" prop="id">
-                    <el-input v-model="editInstructor.id" disabled></el-input>
-                </el-form-item>
-                <el-form-item label="first name" prop="firstName">
-                    <el-input v-model="editInstructor.firstName"></el-input>
-                </el-form-item>
-                <el-form-item label="last name" prop="lastName">
-                    <el-input v-model="editInstructor.lastName"></el-input>
-                </el-form-item>
-                <el-form-item label="phone number" prop="phone">
-                    <el-input v-model="editInstructor.phone"></el-input>
-                </el-form-item>
-                <el-form-item label="e-mail address" prop="email">
-                    <el-input v-model="editInstructor.email"></el-input>
-                </el-form-item>
-                <el-form-item label="status" prop="status">
-                    <el-select v-model="editInstructor.status" placeholder="status">
-                        <el-option key="1" label="activated" value="1"></el-option>
-                        <el-option key="2" label="inactivated" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                    <el-button @click="cancelEdit">Cancel</el-button>
-                    <el-button type="primary" @click="updateInstructor">Save</el-button>
-            </span>
-        </el-dialog>
-        <!-- add new instructor -->
-        <el-dialog title="add a new instructor" :visible.sync="addInstructorVisible" width="50%">
-            <el-form ref="addInstructor" :model="editInstructor" label-width="80px">
-                <el-form-item label="first name" prop="firstName">
-                    <el-input v-model="editInstructor.firstName"></el-input>
-                </el-form-item>
-                <el-form-item label="last name" prop="lastName">
-                    <el-input v-model="editInstructor.lastName"></el-input>
-                </el-form-item>
-                <el-form-item label="phone number" prop="phone">
-                    <el-input v-model="editInstructor.phone"></el-input>
-                </el-form-item>
-                <el-form-item label="email address" prop="email">
-                    <el-input v-model="editInstructor.email"></el-input>
-                </el-form-item>
-                <el-form-item label="status" prop="status">
-                    <el-select v-model="editInstructor.status" placeholder="status">
-                        <el-option key="1" label="activated" value="1"></el-option>
-                        <el-option key="2" label="inactivated" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                    <el-button @click="cancelAdd">Cancel</el-button>
-                    <el-button type="primary" @click="addInstructor">add</el-button>
-                </span>
-        </el-dialog>
 
     </div>
 </template>
@@ -121,39 +77,24 @@
                 /**
                  *  table data
                  */
-                instructors:[],
-                tempInstructors:[],
+                students: [],
+                tempStudents: [],
 
-
-                /**
-                 * edit data
-                 */
-                editInstructor: {
-                    id: '',
-                    firstName: '',
-                    lastName: '',
-                    phone: '',
-                    email: '',
-                    status: '',
-                },
 
 
                 /**
                  * select data
-                */
-                selectFirstName:'',
-
-
-                /**
-                 *  control data
                  */
-                addInstructorVisible:false,
-                editVisible: false,
+                selectFirstName: '',
+                currentCourses: [],
+                selectCourse: '',
+
 
             }
         },
         created() {
             this.getData();
+            this.getCurrentCourse();
         },
         computed: {},
         methods: {
@@ -163,22 +104,22 @@
             getData() {
                 this.$axios({
                     method: 'get',
-                    url: '/api/professors',
+                    url: '/api/students',
                 }).then(res => {
-                    this.instructors = res.data;
-                    this.tempInstructors = res.data;
+                    this.students = res.data;
+                    this.tempStudents = res.data;
+                    console.log(this.students);
                 }).catch(error => {
                     this.$message.error("data load failed");
                 })
             },
-            getInstructor(id){
+            getCurrentCourse() {
                 this.$axios({
                     method: 'get',
-                    url: '/api/professor/' + id,
+                    url: '/api/current/courses',
                 }).then(res => {
-                    this.editInstructor = res.data;
-                    this.editVisible = true;
-                    console.log(res.data);
+                    this.currentCourses = res.data;
+
                 }).catch(error => {
                     this.$message.error("system error, pleases try later");
                 });
@@ -187,35 +128,31 @@
             /**
              * operation methods
              */
-            updateInstructor() {
+            deleteStudent(id) {
                 this.$axios({
-                    method: 'put',
-                    url: '/api/professor',
-                    data: this.editInstructor
+                    method: 'delete',
+                    url: '/api/student' + id
                 }).then(res => {
-                    this.getData();
-                    this.getInstructor(this.editInstructor.id);
-                    this.$message.success(res.msg);
+                    this.$message.info(res.data);
                 }).catch(error => {
-                    this.$message.error(error);
-
+                    this.$message.error("delete failed!")
+                    console.log(error);
                 })
             },
-
             /**
              * search methods
              */
-            search(){
-                this.instructors = this.tempInstructors;
+            search() {
+                this.students = this.tempStudents;
 
-                if (this.selectFirstName !== ''){
-                    this.instructors = this.instructors.filter(item => {
+                if (this.selectFirstName !== '') {
+                    this.students = this.students.filter(item => {
                         return item.firstName.indexOf(this.selectFirstName) !== -1;
                     })
                 }
             },
-            cancelSearch(){
-                this.instructors = this.tempInstructors;
+            cancelSearch() {
+                this.students = this.tempStudents;
                 this.selectFirstName = '';
             },
 
@@ -226,13 +163,13 @@
                 return row.status === value;
             },
             slotContent(scope) {
-                if (scope.row.status === '1') return 'activated'
-                else if (scope.row.status === '2') return 'deactivated'
+                if (scope.row.status === '1') return 'current'
+                else if (scope.row.status === '2') return 'deleted'
                 else return 'missing'
             },
             tagType(scope) {
                 if (scope.row.status === '1') return 'success'
-                else if (scope.row.status === '2') return 'danger'
+                else if (scope.row.status === '2') return 'info'
                 else return 'warning';
             },
 
@@ -244,65 +181,39 @@
             change() {
                 this.$forceUpdate();
             },
-
-            deleteInstructor(id) {
-                this.$confirm('This operation will permanently delete the record, do you want to continue?', 'Notification', {
-                    confirmButtonText: 'confirm',
-                    cancelButtonText: 'cancel',
-                    type: 'warning'
-                }).then(() => {
-                    this.$axios({
-                        method: 'delete',
-                        url: 'api/professor/' + id
-                    }).then(res => {
-                        this.$message.success(res.msg);
-                        this.getData();
-                    }).catch(error => {
-                        console.log(error);
-                    })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: 'already canceled delete'
-                    });
-                });
-
-            },
-            cancelEdit() {
-                this.editVisible = false;
-                this.getData();
-            },
-            cancelUpload() {
-                this.uploadImgVisible = false;
-            },
-            openAddPage(){
-                this.resetForm('addInstructor');
-                this.addInstructorVisible = true;
-            },
             resetForm(formName) {
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs[formName].resetFields();
                 })
             },
 
             /**
-             *  add new instructor methods
+             *  select course's student
              */
-            cancelAdd(){
-                this.addInstructorVisible = false;
-            },
-            addInstructor(){
-                this.$axios({
-                    method:'post',
-                    url: "/api/professor",
-                    data: this.editInstructor
+            async selectStudents() {
+
+                let courseId = this.currentCourses.filter(item => {
+                    return item.name === this.selectCourse;
+                })[0].id;
+
+                console.log(courseId);
+
+                await this.$axios({
+                    method: 'get',
+                    url:'/api/current/students/' + courseId
                 }).then(res => {
-                    this.getData()
-                    this.$message.success(res.msg);
-                }).catch(error => {
-                    this.$message.info(error);
+                    this.students = res.data;
                 })
             },
+            showAll(){
+                this.students = this.tempStudents;
+                this.selectCourse = '';
+            },
+            refresh(){
+                this.getCurrentCourse();
+                this.getData();
+            }
+
         }
     }
 

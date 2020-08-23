@@ -38,8 +38,6 @@
             return {
                 collapse: false,
                 items: [
-
-
                     {
                         icon: 'el-icon-lx-calendar',
                         index: 'admin-page',
@@ -57,6 +55,14 @@
                                 index: 'user-admin',
                                 title: 'Manage user'
                             },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'student-admin',
+                                title: 'Manage student'
+                            },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'dashboard-admin',
+                                title: 'Manage dashboard'
+                            },
                         ]
                     },
                     {
@@ -67,6 +73,14 @@
                             {   icon: 'el-icon-lx-cascades',
                                 index: 'courses',
                                 title: 'view courses'
+                            },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'dashboard-user',
+                                title: 'dashboard'
+                            },
+                            {   icon: 'el-icon-lx-cascades',
+                                index: 'profile',
+                                title: 'my profile'
                             },
 
                         ]
@@ -175,10 +189,40 @@
             }
         },
         created(){
+            this.initTags();
             // 通过 Event Bus 进行组件间通信，来折叠侧边栏
             bus.$on('collapse', msg => {
                 this.collapse = msg;
             })
+        },
+        methods:{
+            initTags(){
+                let role = localStorage.getItem('role');
+                if (role === 'user'){
+                    this.items = [
+                        {
+                            icon: 'el-icon-lx-calendar',
+                            index: 'user-page',
+                            title: 'User page',
+                            subs:[
+                                {   icon: 'el-icon-lx-cascades',
+                                    index: 'courses',
+                                    title: 'view courses'
+                                },
+                                {   icon: 'el-icon-lx-cascades',
+                                    index: 'dashboard-user',
+                                    title: 'dashboard'
+                                },
+                                {   icon: 'el-icon-lx-cascades',
+                                    index: 'profile',
+                                    title: 'my profile'
+                                },
+
+                            ]
+                        },
+                    ]
+                }
+            }
         }
     }
 </script>

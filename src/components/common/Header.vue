@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">Elite Tour Back-End administration system</div>
+        <div class="logo">Megrez-academy</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -14,25 +14,14 @@
                     </el-tooltip>
                 </div>
                 <!-- 消息中心 -->
-                <div class="btn-bell">
-                    <el-tooltip effect="dark" :content="message?`Has ${message} Unread message`:`message center`" placement="bottom">
-                        <router-link to="/tabs">
-                            <i class="el-icon-bell"></i>
-                        </router-link>
-                    </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
-                </div>
                 <!-- 用户头像 -->
                 <div class="user-avator"><img src="../../assets/img/img.jpg"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
-                        {{username}} <i class="el-icon-caret-bottom"></i>
+                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="http://blog.gdfengshuo.com/about/" target="_blank">
-                            <el-dropdown-item>user profile</el-dropdown-item>
-                        </a>
                         <el-dropdown-item divided  command="loginout">logout</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -47,21 +36,17 @@
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
                 message: 2
             }
         },
         computed:{
-            username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
-            }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
-                if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                if(command === 'loginout'){
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('role');
                     this.$router.push('/login');
                 }
             },

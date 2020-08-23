@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/dashboard'
+            redirect: '/login'
         },
         {
             path: '/',
@@ -118,6 +118,16 @@ export default new Router({
                     component: resolve => require(['../view/user/user-admin'], resolve),
                     meta: { title: 'user admin' }
                 },
+                {
+                    path: '/student-admin',
+                    component: resolve => require(['../view/student/student-admin'], resolve),
+                    meta: { title: 'student admin' }
+                },
+                {
+                    path: '/dashboard-admin',
+                    component: resolve => require(['../view/dashboard/Dashboard-admin'], resolve),
+                    meta: { title: 'dashboard admin' }
+                },
 
                 /**
                  * user's page
@@ -127,12 +137,24 @@ export default new Router({
                     component: resolve => require(['../view/course/course'], resolve),
                     meta: { title: 'view all course' }
                 },
+                {
+                    path: '/dashboard-user',
+                    component: resolve => require(['../view/dashboard/dashboard-user'], resolve),
+                    meta: { title: 'User Profile' }
+                },
+                {
+                    path: '/profile',
+                    component: resolve => require(['../view/profile/Profile'], resolve),
+                    meta: { title: 'My profile' }
+
+                },
             ]
         },
         {
             path: '/login',
             component: resolve => require(['../components/page/Login.vue'], resolve)
         },
+
         {
             path: '*',
             redirect: '/404'

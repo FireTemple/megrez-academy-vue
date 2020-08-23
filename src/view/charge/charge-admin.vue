@@ -51,7 +51,7 @@
                         label="status"
                         width="100"
                         fixed="right"
-                        :filters="[{ text: 'activated', value: '1' }, { text: 'deactivated', value: '2' },{text: 'canceled',value:'3'},{text: 'started',value:'4'},{text: 'finished',value:'5'}]"
+                        :filters="[{ text: 'activated', value: '1' }, { text: 'deactivated', value: '2' },{text: 'canceled',value:'3'}]"
                         :filter-method="filterStatus"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
@@ -264,16 +264,12 @@
                 if (scope.row.status === '1') return 'activated'
                 else if (scope.row.status === '2') return 'deactivated'
                 else if (scope.row.status === '3') return 'canceled'
-                else if (scope.row.status === '4') return 'started'
-                else if (scope.row.status === '5') return 'finished'
-                else return 'missing';
+                else return 'cancel';
             },
             tagType(scope) {
                 if (scope.row.status === '1') return 'success'
                 else if (scope.row.status === '2') return 'info'
                 else if (scope.row.status === '3') return 'danger'
-                else if (scope.row.status === '4') return 'warning'
-                else if (scope.row.status === '5') return 'primary'
                 else return 'warning';
             },
             resetForm(formName) {

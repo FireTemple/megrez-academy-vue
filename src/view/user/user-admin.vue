@@ -7,10 +7,9 @@
         </div>
 
         <div class="handle-box">
-            <el-input v-model="selectUsername" placeholder="course number" class="handle-input mr10"></el-input>
+            <el-input v-model="selectUsername" placeholder="username " class="handle-input mr10"></el-input>
             <el-button type="primary" icon="el-icon-search" @click="search">search</el-button>
             <el-button type="danger" icon="el-icon-close" @click="cancelSearch">cancel filter</el-button>
-            <el-button type="success" icon="el-icon-plus" @click="openAddPage">add new course</el-button>
         </div>
 
         <div class="container">
@@ -183,28 +182,17 @@
             },
 
             search(){
-                this.courses = this.courseTemp;
-                if (this.selectSemester !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.semester === this.selectSemester;
-                    })
-                }
-                if (this.selectCourseNumber !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.number === this.selectCourseNumber;
-                    })
-                }
-                if (this.selectNCourseName !== ''){
-                    this.courses = this.courses.filter(item => {
-                        return item.name === this.selectNCourseName;
+                this.users = this.usersTemp;
+
+                if (this.selectUsername !== ''){
+                    this.users = this.users.filter(item => {
+                        return item.username === this.selectUsername;
                     })
                 }
             },
             cancelSearch(){
-                this.courses = this.courseTemp;
-                this.selectNCourseName = '';
-                this.selectSemester = '';
-                this.selectCourseNumber = '';
+                this.users = this.usersTemp;
+                this.selectUsername = '';
             },
 
             change() {
