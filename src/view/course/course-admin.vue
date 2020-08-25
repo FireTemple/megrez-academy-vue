@@ -7,7 +7,7 @@
         </div>
 
         <div class="handle-box">
-<!--            <el-button type="primary" icon="delete" class="handle-del mr10" >removed</el-button>-->
+            <!--            <el-button type="primary" icon="delete" class="handle-del mr10" >removed</el-button>-->
             <el-select v-model="selectSemester" placeholder="semester" class="handle-select mr10">
                 <el-option key="0" label="" value=""></el-option>
                 <el-option key="1" label="F2020" value="F2020"></el-option>
@@ -17,7 +17,8 @@
                 <el-option key="5" label="S2021" value="S2021"></el-option>
             </el-select>
             <el-input v-model="selectCourseNumber" placeholder="course number" class="handle-input mr10"></el-input>
-            <el-input v-model="selectNCourseName" placeholder="course name * case Sensitive" class="handle-input mr10"></el-input>
+            <el-input v-model="selectNCourseName" placeholder="course name * case Sensitive"
+                      class="handle-input mr10"></el-input>
             <el-button type="primary" icon="el-icon-search" @click="search">search</el-button>
             <el-button type="danger" icon="el-icon-close" @click="cancelSearch">cancel filter</el-button>
             <el-button type="success" icon="el-icon-plus" @click="openAddPage">add new course</el-button>
@@ -72,10 +73,19 @@
                         <el-button type="text" icon="el-icon-delete" class="red" @click="deleteCourse(scope.row.id)"
                                    v-show="scope.row.status !== '3'">delete
                         </el-button>
+                        <el-button type="text" icon="el-icon-check" style="color: #00a854"
+                                   @click="startCourse(scope.row.id)"
+                                   v-show="scope.row.status === '1'">start
+                        </el-button>
+                        <el-button type="text" icon="el-icon-check" style="color: #00a854"
+                                   @click="courseStudentDetailsF(scope.row.id)"
+                                   v-show="scope.row.status !== '2' && scope.row.status !== '3' && scope.row.status !== '5'">details
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
+
                 <el-pagination background @current-change="" layout="prev, pager, next" :total="1000">
                 </el-pagination>
             </div>
@@ -112,24 +122,27 @@
                     <el-input v-model="editCourse.des"></el-input>
                 </el-form-item>
                 <el-form-item label="start time" prop="startTime">
-                    <el-date-picker type="date" value-format="yyyy-MM-dd" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker type="date" value-format="yyyy-MM-dd" placeholder="pick date"
+                                    v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="end time" prop="endTime">
-                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date"
+                                    v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="instructor" prop="firstName">
                     <el-select v-model="editCourse.firstName" placeholder="instructor" @change="changeTId">
-                        <el-option v-for="item in instructorList" :key="item.id" :label="item.firstName" :value="item.firstName"></el-option>
+                        <el-option v-for="item in instructorList" :key="item.id" :label="item.firstName"
+                                   :value="item.firstName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="tuition $" prop="tuition">
-                    <el-input  v-model="editCourse.tuition" size="mini"></el-input>
+                    <el-input v-model="editCourse.tuition" size="mini"></el-input>
                 </el-form-item>
                 <el-form-item label="textbook" prop="textbook">
-                    <el-input  v-model="editCourse.textbook" size="mini"></el-input>
+                    <el-input v-model="editCourse.textbook" size="mini"></el-input>
                 </el-form-item>
                 <el-form-item label="prerequisite" prop="prerequisite">
-                    <el-input  v-model="editCourse.prerequisite" size="mini"></el-input>
+                    <el-input v-model="editCourse.prerequisite" size="mini"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -165,24 +178,27 @@
                     <el-input v-model="editCourse.des"></el-input>
                 </el-form-item>
                 <el-form-item label="start time" prop="startTime">
-                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date"
+                                    v-model="editCourse.startTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="end time" prop="endTime">
-                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date" v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
+                    <el-date-picker value-format="yyyy-MM-dd" type="date" placeholder="pick date"
+                                    v-model="editCourse.endTime" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="instructor" prop="firstName">
                     <el-select v-model="editCourse.firstName" placeholder="instructor" @change="changeTId">
-                        <el-option v-for="item in instructorList" :key="item.id" :label="item.firstName" :value="item.firstName"></el-option>
+                        <el-option v-for="item in instructorList" :key="item.id" :label="item.firstName"
+                                   :value="item.firstName"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="tuition $" prop="tuition">
-                    <el-input  v-model="editCourse.tuition" size="mini"></el-input>
+                    <el-input v-model="editCourse.tuition" size="mini"></el-input>
                 </el-form-item>
                 <el-form-item label="textbook" prop="textbook">
-                    <el-input  v-model="editCourse.textbook" size="mini"></el-input>
+                    <el-input v-model="editCourse.textbook" size="mini"></el-input>
                 </el-form-item>
                 <el-form-item label="prerequisite" prop="prerequisite">
-                    <el-input  v-model="editCourse.prerequisite" size="mini"></el-input>
+                    <el-input v-model="editCourse.prerequisite" size="mini"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -190,7 +206,40 @@
                     <el-button type="primary" @click="addCourse">add</el-button>
                 </span>
         </el-dialog>
+        <!-- detail student table-->
+        <el-dialog title="Course student details" :visible.sync="courseStudentDetails" width="80%">
+            <el-table :data="courseDetailList" border class="table" ref="multipleTable" :stripe="true" :fit="true">
+                <el-table-column type="selection" width="55" align="center"></el-table-column>
+                <el-table-column prop="id" label="student id" width="350"></el-table-column>
+                <el-table-column prop="firstName" label="first name" width="200"></el-table-column>
+                <el-table-column prop="lastName" label="last name" width="200"></el-table-column>
+                <el-table-column prop="birth" label="birth" width="200"></el-table-column>
+                <el-table-column label="gender" width="200" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" v-show="scope.row.gender === '1'">male</el-button>
+                        <el-button type="text" v-show="scope.row.gender === '2'">female</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="status"
+                        label="status"
+                        width="200"
+                        :filters="[{ text: 'current', value: '1' }, { text: 'deleted', value: '2' }]"
+                        :filter-method="filterStatus"
+                        filter-placement="bottom-end">
+                    <template slot-scope="scope">
+                        <el-tag
+                                :type="tagType(scope)"
+                                disable-transitions>{{slotContent(scope)}}
+                        </el-tag>
+                    </template>
+                </el-table-column>
+            </el-table>
 
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click="cancelAdd">Cancel</el-button>
+                </span>
+        </el-dialog>
         <!--        &lt;!&ndash; 删除提示框 &ndash;&gt;-->
         <!--        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>-->
         <!--            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>-->
@@ -210,15 +259,18 @@
 
                 /**
                  * select data
-                */
-                selectSemester:'',
-                selectNCourseName:'',
-                selectCourseNumber:'',
+                 */
+                selectSemester: '',
+                selectNCourseName: '',
+                selectCourseNumber: '',
 
                 courses: [],
-                courseTemp:[],
+                courseTemp: [],
+                courseDetailList: [],
                 editVisible: false,
-                addCourseVisible:false,
+                addCourseVisible: false,
+                courseStudentDetails: false,
+
                 editCourse: {
                     id: '',
                     name: '',
@@ -234,10 +286,10 @@
                     number: '',
                     lastName: '',
                     firstName: '',
-                    tId:''
+                    tId: ''
                 },
 
-                instructorList:[]
+                instructorList: []
             }
         },
         created() {
@@ -249,12 +301,12 @@
             /**
              * query data methods
              */
-            getInstructor(){
+            getInstructor() {
                 this.$axios({
-                    method:'get',
-                    url:'/api/professors'
+                    method: 'get',
+                    url: '/api/professors'
                 }).then(res => {
-                   this.instructorList = res.data;
+                    this.instructorList = res.data;
                 }).catch(error => {
                     console.log(error);
                 })
@@ -270,9 +322,9 @@
                     this.$message.error("data load failed");
                 })
             },
-            getCourse(id){
+            getCourse(id) {
                 this.editVisible = true;
-               return this.$axios({
+                return this.$axios({
                     method: 'get',
                     url: '/api/course/' + id,
                 }).then(res => {
@@ -301,31 +353,31 @@
                     this.$message.error("system error, pleases try later");
                 })
             },
-            changeTId(){
-              this.editCourse.tId = this.instructorList.filter(item => {
-                  return item.firstName === this.editCourse.firstName;
-              })[0].id;
+            changeTId() {
+                this.editCourse.tId = this.instructorList.filter(item => {
+                    return item.firstName === this.editCourse.firstName;
+                })[0].id;
             },
 
-            search(){
+            search() {
                 this.courses = this.courseTemp;
-                if (this.selectSemester !== ''){
+                if (this.selectSemester !== '') {
                     this.courses = this.courses.filter(item => {
                         return item.semester === this.selectSemester;
                     })
                 }
-                if (this.selectCourseNumber !== ''){
+                if (this.selectCourseNumber !== '') {
                     this.courses = this.courses.filter(item => {
-                        return item.number.indexOf(this.selectCourseNumber) !== -1 ;
+                        return item.number.indexOf(this.selectCourseNumber) !== -1;
                     })
                 }
-                if (this.selectNCourseName !== ''){
+                if (this.selectNCourseName !== '') {
                     this.courses = this.courses.filter(item => {
-                        return item.name.indexOf(this.selectNCourseName) !== -1 ;
+                        return item.name.indexOf(this.selectNCourseName) !== -1;
                     })
                 }
             },
-            cancelSearch(){
+            cancelSearch() {
                 this.courses = this.courseTemp;
                 this.selectNCourseName = '';
                 this.selectSemester = '';
@@ -394,19 +446,67 @@
                 });
 
             },
+            async startCourse(id) {
+                let nums = [];
+                await this.$axios({
+                    method: 'get',
+                    url: '/api/current/students/' + id
+                }).then(res => {
+                   nums = res.data.length;
+                })
+               await this.$confirm('Are your sure you want start this class, there are ' + nums + ' students will be charged', 'Notification', {
+                    confirmButtonText: 'confirm',
+                    cancelButtonText: 'cancel',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios({
+                        method: 'get',
+                        url: '/index/create-charge/' + id
+                    }).then(res => {
+                        this.$axios({
+                            method:'get',
+                            url: '/api/course/start/' + id
+                        }).then(res => {
+                            this.$message.success(res.msg);
+                            this.getData();
+                        }).catch(error => {
+                            console.log(error);
+                        })
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: 'already canceled start course'
+                    });
+                });
+            },
+            courseStudentDetailsF(id){
+                this.$axios({
+                    method:'get',
+                    url:'/api/students/course/' + id
+                }).then(res => {
+                    this.courseDetailList = res.data;
+                    this.courseStudentDetails = true;
+                })
+            },
             cancelEdit() {
                 this.editVisible = false;
                 this.getData();
             },
+            cancelDetail() {
+                this.courseStudentDetails = false;
+            },
             cancelUpload() {
                 this.uploadImgVisible = false;
             },
-            openAddPage(){
+            openAddPage() {
                 this.resetForm('addCourse');
                 this.addCourseVisible = true;
             },
             resetForm(formName) {
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs[formName].resetFields();
                 })
             },
@@ -414,12 +514,12 @@
             /**
              *  add new instructor methods
              */
-            cancelAdd(){
+            cancelAdd() {
                 this.addCourseVisible = false;
             },
-            addCourse(){
+            addCourse() {
                 this.$axios({
-                    method:'post',
+                    method: 'post',
                     url: "/api/course",
                     data: this.editCourse
                 }).then(res => {

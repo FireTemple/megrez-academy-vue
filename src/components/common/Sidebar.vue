@@ -222,6 +222,37 @@
                         },
                     ]
                 }
+                // else{
+                //     this.items = [
+                //         {
+                //             icon: 'el-icon-lx-calendar',
+                //             index: 'admin-page',
+                //             title: 'Admin page',
+                //             subs:[
+                //                 {   icon: 'el-icon-lx-cascades',
+                //                     index: 'instructor-admin',
+                //                     title: 'Manage instructors'
+                //                 },
+                //                 {   icon: 'el-icon-lx-cascades',
+                //                     index: 'course-admin',
+                //                     title: 'Manage courses'
+                //                 },
+                //                 {   icon: 'el-icon-lx-cascades',
+                //                     index: 'user-admin',
+                //                     title: 'Manage user'
+                //                 },
+                //                 {   icon: 'el-icon-lx-cascades',
+                //                     index: 'student-admin',
+                //                     title: 'Manage student'
+                //                 },
+                //                 {   icon: 'el-icon-lx-cascades',
+                //                     index: 'dashboard-admin',
+                //                     title: 'Manage dashboard'
+                //                 },
+                //             ]
+                //         },
+                //     ]
+                // }
             }
         }
     }

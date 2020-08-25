@@ -64,7 +64,7 @@
                 <el-table-column label="Operation" width="180" align="center" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="getCourse(scope.row.id)" v-show="scope.row.status === '1'">register</el-button>
-                        <el-button style="color: red" type="text" icon="el-icon-edit"  v-show="scope.row.status !== '1'">unavailable</el-button>
+                        <el-button style="color: gray" type="text" icon="el-icon-close"  v-show="scope.row.status !== '1'">unavailable</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -170,7 +170,7 @@
         },
         created() {
             this.getData();
-            this.getStudent(1);
+            this.getStudent(localStorage.getItem("userId"));
         },
         mounted() {
         },
@@ -185,7 +185,10 @@
                     url: '/api/coursesAdmin',
                 }).then(res => {
                     this.courses = res.data;
-                    this.courseTemp = res.data;
+                    this.courses = this.courses.filter(item => {
+                        return item.status !== '2' && item.status !== '3' && item.status !== '5';
+                    })
+                    this.courseTemp = this.courses;
                 }).catch(error => {
                     this.$message.error("data load failed");
                 })
