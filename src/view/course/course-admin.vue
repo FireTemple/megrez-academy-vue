@@ -79,7 +79,8 @@
                         </el-button>
                         <el-button type="text" icon="el-icon-check" style="color: #00a854"
                                    @click="courseStudentDetailsF(scope.row.id)"
-                                   v-show="scope.row.status !== '2' && scope.row.status !== '3' && scope.row.status !== '5'">details
+                                   v-show="scope.row.status !== '2' && scope.row.status !== '3' && scope.row.status !== '5'">
+                            details
                         </el-button>
                     </template>
                 </el-table-column>
@@ -237,7 +238,7 @@
             </el-table>
 
             <span slot="footer" class="dialog-footer">
-                    <el-button @click="cancelAdd">Cancel</el-button>
+                    <el-button @click="cancelDetail">Cancel</el-button>
                 </span>
         </el-dialog>
         <!--        &lt;!&ndash; 删除提示框 &ndash;&gt;-->
@@ -452,9 +453,9 @@
                     method: 'get',
                     url: '/api/current/students/' + id
                 }).then(res => {
-                   nums = res.data.length;
+                    nums = res.data.length;
                 })
-               await this.$confirm('Are your sure you want start this class, there are ' + nums + ' students will be charged', 'Notification', {
+                await this.$confirm('Are your sure you want start this class, there are ' + nums + ' students will be charged', 'Notification', {
                     confirmButtonText: 'confirm',
                     cancelButtonText: 'cancel',
                     type: 'warning'
@@ -464,7 +465,7 @@
                         url: '/index/create-charge/' + id
                     }).then(res => {
                         this.$axios({
-                            method:'get',
+                            method: 'get',
                             url: '/api/course/start/' + id
                         }).then(res => {
                             this.$message.success(res.msg);
@@ -482,10 +483,10 @@
                     });
                 });
             },
-            courseStudentDetailsF(id){
+            courseStudentDetailsF(id) {
                 this.$axios({
-                    method:'get',
-                    url:'/api/students/course/' + id
+                    method: 'get',
+                    url: '/api/students/course/' + id
                 }).then(res => {
                     this.courseDetailList = res.data;
                     this.courseStudentDetails = true;

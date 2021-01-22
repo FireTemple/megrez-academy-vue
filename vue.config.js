@@ -23,21 +23,21 @@ module.exports = {
                 secure:false
             },
             '/api': {
-                target: 'http://localhost:8081',
+                target: 'http://localhost:5000',
                 pathReWrite:{
                     '^/api': ''
                 },
                 changeOrigin: true,
                 secure:false
             },
-            '/index': {
-                target: 'http://localhost:8081',
-                pathReWrite:{
-                    '^/index': ''
-                },
-                changeOrigin: true,
-                secure:false
-            },
+            // '/index': {
+            //     target: 'http://localhost:8081',
+            //     pathReWrite:{
+            //         '^/index': ''
+            //     },
+            //     changeOrigin: true,
+            //     secure:false
+            // },
         }
     }
 }

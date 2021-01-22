@@ -69,7 +69,12 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination background @current-change="" layout="prev, pager, next" :total="1000">
+                <el-pagination
+                        @current-change="handleChangeNum"
+                        :current-page.sync="currentPage"
+                        :page-size="pageSize"
+                        layout="total, prev, pager, next"
+                        :total="totalRecord">
                 </el-pagination>
             </div>
         </div>
@@ -121,6 +126,7 @@
 </template>
 
 <script>
+    import pageHelperQueryAll from "../../utils/pageHelper";
 
     import $ from 'jquery';
 
@@ -128,6 +134,12 @@
         name: 'coursesAdmin',
         data() {
             return {
+                /**
+                 *  page helper
+                 */
+                totalRecord: 0,
+                currentPage: 1,
+                pageSize: 5,
                 /**
                  *  mock user id
                  */
@@ -177,21 +189,32 @@
         computed: {},
         methods: {
             /**
-             * query data methods
+             *  when page num changed
              */
-            getData() {
-                this.$axios({
-                    method: 'get',
-                    url: '/api/coursesAdmin',
-                }).then(res => {
-                    this.courses = res.data;
+            handleChangeNum(pageNum){
+                pageHelperQueryAll('/api/courses', 'post', pageNum, this.pageSize).then(res => {
+                    this.totalRecord = JSON.parse(res.totalRows);
+                    this.courses = res.list;
                     this.courses = this.courses.filter(item => {
                         return item.status !== '2' && item.status !== '3' && item.status !== '5';
                     })
                     this.courseTemp = this.courses;
-                }).catch(error => {
-                    this.$message.error("data load failed");
                 })
+            },
+
+
+            /**
+             * query data methods
+             */
+            getData() {
+                pageHelperQueryAll('/api/courses', 'post', 1, this.pageSize).then(res =>{
+                        this.totalRecord = JSON.parse(res.totalRows);
+                        this.courses = res.list;
+                        this.courses = this.courses.filter(item => {
+                            return item.status !== '2' && item.status !== '3' && item.status !== '5';
+                        })
+                        this.courseTemp = this.courses;
+                });
             },
             getCourse(id) {
                 // reset data

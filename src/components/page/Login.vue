@@ -85,6 +85,8 @@
 </template>
 
 <script>
+    import course from "../../view/course/course";
+
     export default {
         data: function () {
             let validatePass2 = (rule, value, callback) => {
@@ -197,14 +199,14 @@
                         if (valid) {
                             console.log(this.signUp);
                             this.$axios({
-                                method:'post',
+                                method: 'post',
                                 url: '/api/user',
                                 data: this.signUp
-                            }).then( res => {
-                                if (res.code === 0){
+                            }).then(res => {
+                                if (res.code === 0) {
                                     this.$message.success("Success! pleases sign in");
                                     this.resetForm('signUp');
-                                }else{
+                                } else {
                                     this.$message.error(res.msg);
                                 }
                             }).catch(error => {
@@ -218,11 +220,21 @@
                     })
                 }
             },
+            checkIfLogedIn() {
+                if (localStorage.getItem('userId')) {
+                    if (localStorage.getItem('role') === 'user')
+                        this.$router.replace('dashboard-user')
+                    else this.$router.replace('dashboard-admin')
+                }
+            },
             resetForm(formName) {
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs[formName].resetFields();
                 })
             },
+        },
+        created() {
+            this.checkIfLogedIn();
         }
     }
 </script>
